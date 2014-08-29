@@ -55,7 +55,7 @@ class ClientVideoApp:
             threshVideo.configure(image=b2)
             master.update()
 
-            self.client_socket.send("tresh;"+str(self.minH)+";"+str(self.minS)+";"+str(self.minV)+";"+str(self.maxH)+";"+str(self.maxS)+";"+str(self.maxV))
+            self.client_socket.send("soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get()))
 
             #self.client_socket.send("continue")
             
@@ -65,12 +65,14 @@ class ClientVideoApp:
     def set_manual_mode(self):
         if self.manual_mode:
             self.manual_mode = False
+            self.client_socket.send("manuale;off;ok")
             print "Manual mode: OFF" 
             offPhoto = ImageTk.PhotoImage(file="Off.png")
             self.enableManualButton.config(image=offPhoto)
             self.enableManualButton.image = offPhoto #needed for save image from garbage collection
         else:
             self.manual_mode = True
+            self.client_socket.send("manuale;on;ok")
             print "Manual mode: ON" 
             onPhoto = ImageTk.PhotoImage(file="On.png")
             self.enableManualButton.config(image=onPhoto)
@@ -97,9 +99,35 @@ class ClientVideoApp:
             count -= len(newbuf)
         return buf
 
+    #callback functions for sliders
+    def changeMinH(self,value):
+        self.minH.set(value)
+        stringaDaMandare = "soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get())+""
+        #self.client_socket.send(stringaDaMandare)
+    def changeMinS(self,value):
+        self.minS.set(value)
+        stringaDaMandare = "soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get())+""
+        #self.client_socket.send(stringaDaMandare)
+    def changeMinV(self,value):
+        self.minV.set(value)
+        stringaDaMandare = "soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get())+""
+        #self.client_socket.send(stringaDaMandare)
+    def changeMaxH(self,value):
+        self.maxH.set(value)
+        stringaDaMandare = "soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get())+""
+        #self.client_socket.send(stringaDaMandare)
+    def changeMaxS(self,value):
+        self.maxS.set(value)
+        stringaDaMandare = "soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get())+""
+        #self.client_socket.send(stringaDaMandare)
+    def changeMaxV(self,value):
+        self.maxV.set(value)
+        stringaDaMandare = "soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get())+""
+        #self.client_socket.send(stringaDaMandare)
+        
     def __init__(self,master):
-        TCP_IP = '192.168.7.7'
-        TCP_PORT = 32230
+        TCP_IP = '192.168.1.109'
+        TCP_PORT = 32234
     
         #initialize socket
         try:
@@ -145,42 +173,42 @@ class ClientVideoApp:
         minHInfo = Label(master,text="Min H",relief=RAISED,bg="black",fg="white")
         minHInfo.pack()
         minHInfo.place(x=655,y=525,height=40,width=40)
-        minHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minH,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        minHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minH,orient=HORIZONTAL,troughcolor="black",relief=RAISED,command=self.changeMinH)
         minHSlider.pack()
         minHSlider.place(x=695,y=525,height=40,width=280)
         #minS slider
         minSInfo = Label(master,text="Min S",relief=RAISED,bg="black",fg="white")
         minSInfo.pack()
         minSInfo.place(x=655,y=565,height=40,width=40)
-        minSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minS,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        minSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minS,orient=HORIZONTAL,troughcolor="black",relief=RAISED,command=self.changeMinS)
         minSSlider.pack()
         minSSlider.place(x=695,y=565,height=40,width=280)
         #minV slider
         minVInfo = Label(master,text="Min V",relief=RAISED,bg="black",fg="white")
         minVInfo.pack()
         minVInfo.place(x=655,y=605,height=40,width=40)
-        minVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minV,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        minVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minV,orient=HORIZONTAL,troughcolor="black",relief=RAISED,command=self.changeMinV)
         minVSlider.pack()
         minVSlider.place(x=695,y=605,height=40,width=280)
         #max H slider
         maxHInfo = Label(master,text="Max H",relief=RAISED,bg="black",fg="white")
         maxHInfo.pack()
         maxHInfo.place(x=975,y=525,height=40,width=40)
-        maxHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxH,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        maxHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxH,orient=HORIZONTAL,troughcolor="black",relief=RAISED,command=self.changeMaxH)
         maxHSlider.pack()
         maxHSlider.place(x=1015,y=525,height=40,width=280)
         #max S slider
         maxSInfo = Label(master,text="Max S",relief=RAISED,bg="black",fg="white")
         maxSInfo.pack()
         maxSInfo.place(x=975,y=565,height=40,width=40)
-        maxSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxS,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        maxSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxS,orient=HORIZONTAL,troughcolor="black",relief=RAISED,command=self.changeMaxS)
         maxSSlider.pack()
         maxSSlider.place(x=1015,y=565,height=40,width=280)
         #max V slider
         maxVInfo = Label(master,text="Max V",relief=RAISED,bg="black",fg="white")
         maxVInfo.pack()
         maxVInfo.place(x=975,y=605,height=40,width=40)
-        maxVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxV,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        maxVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxV,orient=HORIZONTAL,troughcolor="black",relief=RAISED,command=self.changeMaxV)
         maxVSlider.pack()
         maxVSlider.place(x=1015,y=605,height=40,width=280)
 
